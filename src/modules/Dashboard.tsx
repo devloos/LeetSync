@@ -1,5 +1,5 @@
 import { Box, Container, Heading, HStack, IconButton, Image, Link, Text, Tooltip, VStack } from '@chakra-ui/react';
-import React, { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { BiLink } from 'react-icons/bi';
 import { CiSettings } from 'react-icons/ci';
 import DoughnutComponent from '../components/Doughnut';
@@ -13,8 +13,8 @@ import flameGif from '../assets/flame.gif';
 interface DashboardProps {}
 
 const LinkedGithubComponents = () => {
-  const [githubUsername, setGithubUsername] = React.useState('');
-  const [githubRepo, setGithubRepo] = React.useState('');
+  const [githubUsername, setGithubUsername] = useState('');
+  const [githubRepo, setGithubRepo] = useState('');
 
   useEffect(() => {
     chrome.storage.sync.get(['github_username', 'github_leetsync_repo'], (result) => {
@@ -52,26 +52,29 @@ const LinkedGithubComponents = () => {
   );
 };
 const Dashboard: React.FC<DashboardProps> = ({}) => {
-  const [solvedProblems, setSolvedProblems] = React.useState({
+  const [solvedProblems, setSolvedProblems] = useState({
     easy: 0,
     medium: 0,
     hard: 0,
   });
-  const [streak, setStreak] = React.useState(0);
-  const [problemsPerDay, setProblemsPerDay] = React.useState<{
+  const [streak, setStreak] = useState(0);
+  const [problemsPerDay, setProblemsPerDay] = useState<{
     [date: string]: number;
   }>();
-  const [githubUsername, setGithubUsername] = React.useState('');
-  const [githubRepo, setGithubRepo] = React.useState('');
+  const [githubUsername, setGithubUsername] = useState('');
+  const [githubRepo, setGithubRepo] = useState('');
 
   const solvedProblemsToday = problemsPerDay?.[new Date().toLocaleDateString()] || 0;
 
-  React.useEffect(() => {
+  useEffect(() => {
     chrome.storage.sync.get(['problemsSolved', 'github_username', 'github_leetsync_repo'], (result) => {
       const { problemsSolved, github_username, github_leetsync_repo } = result;
+
       setGithubUsername(github_username);
       setGithubRepo(github_leetsync_repo);
+
       if (!problemsSolved) return;
+
       let [easy, medium, hard] = [0, 0, 0];
       const problemSolvedValues = Object.values(problemsSolved);
       problemSolvedValues.forEach((problem: any) => {
